@@ -114,5 +114,12 @@ describe('SubmissionController', () => {
           expect(res.body).toHaveProperty('id', 'existing-id');
           expect(res.body).toHaveProperty('status', 'processing');
       });
+
+      // CASE_6
+      it('Should return 404 if submission not found', async () => {
+          const res = await request(app).get('/submission/non-existent-id');
+          expect(res.status).toBe(404);
+          expect(res.body).toHaveProperty('error');
+      });
   });
 });
