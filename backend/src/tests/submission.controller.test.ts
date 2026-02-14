@@ -13,7 +13,18 @@ jest.mock('../services/submissionService', () => {
         status: 'pending',
         created_at: new Date()
       }),
-      getSubmission: jest.fn()
+      getSubmission: jest.fn().mockImplementation((id) => {
+          if (id === 'existing-id') {
+              return Promise.resolve({
+                id: 'existing-id',
+                code: 'console.log("test")',
+                language: 'javascript',
+                status: 'processing',
+                created_at: new Date()
+              });
+          }
+          return Promise.resolve(null);
+      })
     }))
   };
 }, { virtual: true });
@@ -88,16 +99,20 @@ describe('SubmissionController', () => {
       // Verify SubmissionWorker was instantiated
       expect(SubmissionWorker).toHaveBeenCalled();
       
-      // Verify processSubmission was called on the instance
-      // Note: In a real test we might need to grab the specific instance
       const workerInstance = (SubmissionWorker as jest.Mock).mock.instances[0];
-      // Depending on implementation, instance might be created once or per request. 
-      // Assuming singleton or fresh instance, we check if method called.
-      // If singleton, we might check last instance.
-      // But here we rely on the mock factory.
       if (workerInstance) {
           expect(workerInstance.processSubmission).toHaveBeenCalled();
       }
     });
+  });
+
+  describe('GET /submission/:id', () => {
+      // CASE_5
+      it('Should return submission if exists', async () => {
+          const res = await request(app).get('/submission/existing-id');
+          expect(res.status).toBe(200);
+          expect(res.body).toHaveProperty('id', 'existing-id');
+          expect(res.body).toHaveProperty('status', 'processing');
+      });
   });
 });
