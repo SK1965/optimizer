@@ -16,10 +16,12 @@ app.get('/', (req: Request, res: Response) => {
 
 app.get('/db-health', async (req: Request, res: Response) => {
   try {
+    console.log("command running")
     const result = await query('SELECT NOW()');
     res.json({ status: 'OK', time: result.rows[0].now });
-  } catch (error) {
-    res.status(500).json({ status: 'Error', error });
+  } catch (error: any) {
+    console.error('Database Check Error:', error);
+    res.status(500).json({ status: 'Error', error: error.message || 'Internal Server Error' });
   }
 });
 
