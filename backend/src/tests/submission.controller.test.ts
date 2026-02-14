@@ -57,5 +57,20 @@ describe('SubmissionController', () => {
       expect(res.status).toBe(400);
       expect(res.body).toHaveProperty('error');
     });
+
+    // CASE_3
+    it('Should return 400 if language missing', async () => {
+      const payload = {
+        code: 'console.log("test")'
+        // language is missing
+      };
+
+      const res = await request(app)
+        .post('/submit')
+        .send(payload);
+
+      expect(res.status).toBe(400);
+      expect(res.body).toHaveProperty('error');
+    });
   });
 });
