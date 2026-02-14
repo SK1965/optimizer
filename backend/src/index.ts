@@ -1,27 +1,20 @@
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 import express, { Request, Response } from 'express';
-import { connectDB, query } from './server';
-import { createUsersTable } from './db/init';
+import { connectDB } from './db';
 
 const app = express();
 const port = 3000;
 
 // Connect to Database
 connectDB().then(() => {
-  createUsersTable();
+  console.log('Database connected successfully');
 });
 
-app.get('/', (req: Request, res: Response) => {
-  res.send('Health check: OK');
-});
-
-app.get('/db-health', async (req: Request, res: Response) => {
+app.get('/', async (req: Request, res: Response) => {
   try {
-    console.log("command running")
-    const result = await query('SELECT NOW()');
-    res.json({ status: 'OK', time: result.rows[0].now });
-  } catch (error: any) {
-    console.error('Database Check Error:', error);
-    res.status(500).json({ status: 'Error', error: error.message || 'Internal Server Error' });
+    res.send('Server is running and database is connected');
+  } catch (error) {
+    res.status(500).send('Server is running but database connection failed');
   }
 });
 

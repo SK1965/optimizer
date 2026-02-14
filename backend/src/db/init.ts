@@ -1,4 +1,4 @@
-import { query } from '../server';
+import { query } from '../db';
 
 export const createUsersTable = async () => {
   const text = `
