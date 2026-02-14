@@ -38,10 +38,24 @@ describe('SubmissionController', () => {
         .post('/submit')
         .send(payload);
       
-      // Note: This test will currently fail (404) until routes are implemented
       expect(res.status).toBe(201); // Created
       expect(res.body).toHaveProperty('submission_id');
       expect(typeof res.body.submission_id).toBe('string');
+    });
+
+    // CASE_2
+    it('Should return 400 if code missing', async () => {
+      const payload = {
+        // code is missing
+        language: 'javascript'
+      };
+
+      const res = await request(app)
+        .post('/submit')
+        .send(payload);
+
+      expect(res.status).toBe(400);
+      expect(res.body).toHaveProperty('error');
     });
   });
 });
