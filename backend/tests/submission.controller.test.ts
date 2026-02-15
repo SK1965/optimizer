@@ -44,6 +44,15 @@ describe('SubmissionController', () => {
       expect(res.body).toHaveProperty('submission_id', 'test-id-123');
     });
 
+    it('should return 400 if code is missing', async () => {
+      const res = await request(app)
+        .post('/api/submit')
+        .send({ language: 'javascript' });
+
+      expect(res.status).toBe(400);
+      expect(res.body).toHaveProperty('error');
+    });
+
   });
 
 });
