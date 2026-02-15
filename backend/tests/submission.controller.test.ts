@@ -64,4 +64,18 @@ describe('SubmissionController', () => {
 
   });
 
-});
+  const mockedGet = submissionService.getSubmissionById as jest.Mock;
+
+  describe('GET /api/submission/:id', () => {
+
+    it('should return 404 if submission not found', async () => {
+      mockedGet.mockResolvedValue(null);
+
+      const res = await request(app)
+        .get('/api/submission/non-existent-id');
+
+      expect(res.status).toBe(404);
+      expect(res.body).toHaveProperty('error');
+    });
+
+  });
