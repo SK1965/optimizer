@@ -1,3 +1,7 @@
+/**
+ * Tests for Submission Controller
+ * Verified: POST /submit and GET /submission/:id
+ */
 import request from 'supertest';
 import { app } from '../src/app';
 import * as submissionService from '../src/services/submissionService';
