@@ -76,7 +76,9 @@ describe('SubmissionController', () => {
 
       expect(res.status).toBe(404);
       expect(res.body).toHaveProperty('error');
-      it('should create and then fetch submission', async () => {
+    });
+
+    it('should create and then fetch submission', async () => {
       const fakeId = 'test-id-123';
       mockedCreate.mockResolvedValue(fakeId);
 
