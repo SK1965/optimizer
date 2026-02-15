@@ -76,6 +76,34 @@ describe('SubmissionController', () => {
 
       expect(res.status).toBe(404);
       expect(res.body).toHaveProperty('error');
+      it('should create and then fetch submission', async () => {
+      const fakeId = 'test-id-123';
+      mockedCreate.mockResolvedValue(fakeId);
+
+      const createRes = await request(app)
+        .post('/api/submit')
+        .send({
+          code: 'console.log("Hello")',
+          language: 'javascript'
+        });
+
+      expect(createRes.status).toBe(201);
+
+      mockedGet.mockResolvedValue({
+        id: fakeId,
+        status: 'processing'
+      });
+
+      const getRes = await request(app)
+        .get(`/api/submission/${fakeId}`);
+
+      expect(getRes.status).toBe(200);
+      expect(getRes.body).toHaveProperty('id', fakeId);
+      expect(getRes.body).toHaveProperty('status');
     });
+
+  });
+
+});
 
   });
