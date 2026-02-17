@@ -80,7 +80,7 @@ export class DockerSandbox implements Sandbox {
             } catch (e) {
                 console.error(`Failed to cleanup sandbox dir ${tempDir}:`, e);
             }
-        }
+        }``
     }
 
     private getLanguageConfig(language: string): { filename: string, compileCmd?: string, runCmd: string } {
