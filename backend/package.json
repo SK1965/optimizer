@@ -1,10 +1,10 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "main": "dist/index.js",
+  "main": "dist/src/index.js",
   "scripts": {
     "build": "tsc",
-    "start": "node --env-file=.env dist/index.js",
+    "start": "node --env-file=.env dist/src/index.js",
     "dev": "nodemon --env-file=.env src/index.ts",
     "test": "jest"
   },
@@ -15,7 +15,8 @@
   "dependencies": {
     "@types/pg": "^8.16.0",
     "express": "^5.2.1",
-    "pg": "^8.18.0"
+    "pg": "^8.18.0",
+    "uuid": "^13.0.0"
   },
   "devDependencies": {
     "@types/express": "^5.0.6",

@@ -23,7 +23,13 @@ const submissionController = async(req : Request , res : Response) => {
         })
     }
 }
-
+const getsubmissionController = async(req : Request , res : Response) => {
+    const submission_id: string = req.params.id as string;
+    if(!submission_id){
+        return res.status(400).json({
+            error : "submission_id not found"
+        })
+    }
     try {
         const submission = await getSubmissionById(submission_id);
         if(!submission){
