@@ -12,4 +12,8 @@ export interface UpdateSubmissionInput {
   complexity?: string;
   ai_explanation?: string;
   error_message?: string;
+  execution_time_small?: number;
+  execution_time_medium?: number;
+  execution_time_large?: number;
+  estimated_complexity?: string;
 }
