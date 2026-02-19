@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { CreateSubmissionInput } from '../types/submissions.types';
 import { createSubmission, getSubmissionById } from '../services/submissionService';
+import { processSubmission } from '../services/workerService';
 
 const submissionController = async(req : Request , res : Response) => {
     const submissionData : CreateSubmissionInput = req.body
@@ -12,6 +13,10 @@ const submissionController = async(req : Request , res : Response) => {
     console.log(submissionData);
     try {
         const id : string = await createSubmission(submissionData);
+        
+        // Trigger worker asynchronously (fire and forget)
+        processSubmission(id).catch(err => console.error(`Worker error for ${id}:`, err));
+        
         res.status(201).json({
             message : "Submission created successfully",
             submission_id : id
