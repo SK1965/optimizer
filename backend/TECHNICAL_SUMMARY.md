@@ -61,3 +61,15 @@ Deterministic complexity estimation for algorithms using a scaling input approac
     - estimated_complexity (VARCHAR(50))
 
 > Migration script provided in ackend/src/scripts/migrate_complexity.ts.
+
+## 6. Integration & Workflow
+1.  **Submission**: User submits code via API.
+2.  **Worker**: workerService receives the task.
+3.  **Branching**:
+    - If Python AND class Solution: **Complexity Mode**.
+    - Else: **Standard Execution Mode**.
+4.  **Complexity Mode Flow**:
+    - Analyzer generates wrapper script.
+    - code runs in Docker Sandbox.
+    - Analyzer parses SMALL, MEDIUM, LARGE outputs.
+    - DB updated with detailed stats + complexity estimate.
