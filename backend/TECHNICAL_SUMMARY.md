@@ -73,3 +73,11 @@ Deterministic complexity estimation for algorithms using a scaling input approac
     - code runs in Docker Sandbox.
     - Analyzer parses SMALL, MEDIUM, LARGE outputs.
     - DB updated with detailed stats + complexity estimate.
+
+## 7. Testing Strategy
+- **Sandbox Tests** (ackend/tests/sandbox.test.ts):
+    - Verifies execution of all 5 languages.
+    - Verifies timeout handling (infinite loops).
+- **Complexity Tests** (ackend/tests/complexity.test.ts):
+    - Verifies isComplexityMode signature detection.
+    - Verifies Big O estimation logic with mocked timing data.
