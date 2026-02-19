@@ -52,3 +52,12 @@ Deterministic complexity estimation for algorithms using a scaling input approac
     - python/PythonComplexityAnalyzer.ts: Python-specific logic.
 - **ackend/src/scripts/**:
     - migrate_complexity.ts: Database migration script.
+
+## 5. Database Changes
+- **Table**: submissions`n- **New Columns**:
+    - execution_time_small (DOUBLE PRECISION)
+    - execution_time_medium (DOUBLE PRECISION)
+    - execution_time_large (DOUBLE PRECISION)
+    - estimated_complexity (VARCHAR(50))
+
+> Migration script provided in ackend/src/scripts/migrate_complexity.ts.
