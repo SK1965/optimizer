@@ -87,3 +87,9 @@ Deterministic complexity estimation for algorithms using a scaling input approac
 - Multi-parameter algorithm support.
 - Array/Matrix input generation.
 - AI-based runtime input generation.
+
+## 9. Next Steps
+1.  **Migration**: Run 
+px ts-node backend/src/scripts/migrate_complexity.ts.
+2.  **Manual Verification**: Test end-to-end flow with Docker running.
+3.  **Expansion**: Add Java/C++ support to Complexity Engine.
