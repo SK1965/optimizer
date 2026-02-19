@@ -16,6 +16,12 @@ export const processSubmission = async (id: string) => {
     if (!submission) {
       throw new Error('Submission not found');
     }
+    
+    // IDEMPOTENCY CHECK (Audit Fix)
+    if (submission.status === 'completed' || submission.status === 'failed') {
+        console.log(`Submission ${id} is already processed. Skipping.`);
+        return;
+    }
 
     // CHECK FOR COMPLEXITY MODE (Python + Signature)
     if (submission.language === 'python' && pythonAnalyzer.isComplexityMode(submission.code)) {
