@@ -26,3 +26,18 @@ This update introduces a robust **Code Execution Sandbox** and a deterministic *
     3.  Spawns docker run with volume mounts.
     4.  Captures stdout/stderr streams.
     5.  Cleans up temporary files.
+
+## 3. Complexity Analysis Engine (Python)
+
+### Concept
+Deterministic complexity estimation for algorithms using a scaling input approach (1k, 2k, 4k items).
+
+### Components
+- **Database**: Added columns for execution_time_{small,medium,large} and estimated_complexity.
+- **PythonComplexityAnalyzer**:
+    - Detects class Solution pattern.
+    - Injects timing wrapper.
+    - Executes code with scaled inputs.
+    - Calculates time growth ratios (e.g., T_large / T_medium).
+    - Estimates Big O (O(1), O(n), O(n)).
+- **workerService.ts**: Routes eligible Python submissions to the analyzer.
