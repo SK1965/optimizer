@@ -41,3 +41,14 @@ Deterministic complexity estimation for algorithms using a scaling input approac
     - Calculates time growth ratios (e.g., T_large / T_medium).
     - Estimates Big O (O(1), O(n), O(n)).
 - **workerService.ts**: Routes eligible Python submissions to the analyzer.
+
+## 4. Modules Implemented
+- **ackend/src/sandbox/**:
+    - Sandbox.ts: Interface definition.
+    - DockerSandbox.ts: Docker implementation.
+    - sandboxRunner.ts: Singleton instance export.
+- **ackend/src/complexity/**:
+    - ComplexityAnalyzer.ts: Interface definition.
+    - python/PythonComplexityAnalyzer.ts: Python-specific logic.
+- **ackend/src/scripts/**:
+    - migrate_complexity.ts: Database migration script.
