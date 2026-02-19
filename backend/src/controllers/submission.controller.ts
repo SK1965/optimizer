@@ -5,9 +5,10 @@ import { processSubmission } from '../services/workerService';
 
 const submissionController = async(req : Request , res : Response) => {
     const submissionData : CreateSubmissionInput = req.body
-    if(!submissionData){
+    
+    if(!submissionData || !submissionData.code || !submissionData.language){
         return res.status(400).json({
-            error : "data not found"
+            error : "data not found or invalid"
         })
     }
     console.log(submissionData);

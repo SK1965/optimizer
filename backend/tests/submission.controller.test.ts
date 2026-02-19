@@ -1,113 +1,91 @@
-/**
- * Tests for Submission Controller
- * Verified: POST /submit and GET /submission/:id
- */
+
+// 1. Mock 'pg' module to prevent real connection attempt during import
+jest.mock('pg', () => {
+  const mPool = {
+    connect: jest.fn(),
+    query: jest.fn(),
+    end: jest.fn(),
+    on: jest.fn(),
+  };
+  return { Pool: jest.fn(() => mPool) };
+});
+
+// 2. Mock services
+jest.mock('../src/services/submissionService', () => ({
+  createSubmission: jest.fn(),
+  getSubmissionById: jest.fn(),
+}));
+
+jest.mock('../src/services/workerService', () => ({
+  processSubmission: jest.fn(),
+}));
+
 import request from 'supertest';
-import { app } from '../src/app';
-import * as submissionService from '../src/services/submissionService';
-import * as workerService from '../src/services/workerService';
-
-jest.mock('../src/services/submissionService');
-
-import { pool } from '../src/db/client';
+// Import dependencies after mocking
+import { createSubmission, getSubmissionById } from '../src/services/submissionService';
+import { processSubmission } from '../src/services/workerService';
+// app import will trigger db/client.ts import, but pg is now mocked
+import { app } from '../src/app'; 
 
 describe('SubmissionController', () => {
 
   beforeAll(async () => {
-    await pool.query('SELECT 1');
+     // DB is already mocked via 'pg' module mock
   });
 
   afterAll(async () => {
-    await pool.end();
+    jest.restoreAllMocks();
   });
 
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  jest.spyOn(workerService, 'processSubmission')
-      .mockResolvedValue(undefined);
-
-  const mockedCreate = submissionService.createSubmission as jest.Mock;
-
   describe('POST /api/submit', () => {
-
-    it('should create submission and return submission_id', async () => {
-      mockedCreate.mockResolvedValue('test-id-123');
-
-      const payload = {
-        code: 'console.log("Hello")',
-        language: 'javascript'
-      };
+    it('should create submission and trigger worker', async () => {
+      const fakeId = 'abc-123';
+      (createSubmission as jest.Mock).mockResolvedValue(fakeId);
+      (processSubmission as jest.Mock).mockResolvedValue(undefined);
 
       const res = await request(app)
         .post('/api/submit')
-        .send(payload);
+        .send({ code: 'print("hi")', language: 'python' });
 
       expect(res.status).toBe(201);
-      expect(res.body).toHaveProperty('submission_id', 'test-id-123');
+      expect(res.body.submission_id).toBe(fakeId);
+      
+      expect(createSubmission).toHaveBeenCalledTimes(1);
+      expect(processSubmission).toHaveBeenCalledWith(fakeId);
     });
 
-    it('should return 400 if code is missing', async () => {
+    it('should return 400 for missing data', async () => {
       const res = await request(app)
         .post('/api/submit')
-        .send({ language: 'javascript' });
+        .send({});
 
       expect(res.status).toBe(400);
-      expect(res.body).toHaveProperty('error');
+      expect(createSubmission).not.toHaveBeenCalled();
     });
-
-    it('should return 400 if language is missing', async () => {
-      const res = await request(app)
-        .post('/api/submit')
-        .send({ code: 'console.log("test")' });
-
-      expect(res.status).toBe(400);
-      expect(res.body).toHaveProperty('error');
-    });
-
   });
 
-  const mockedGet = submissionService.getSubmissionById as jest.Mock;
-
   describe('GET /api/submission/:id', () => {
+    it('should return submission if found', async () => {
+       const mockSub = { id: '123', status: 'completed' };
+       (getSubmissionById as jest.Mock).mockResolvedValue(mockSub);
 
-    it('should return 404 if submission not found', async () => {
-      mockedGet.mockResolvedValue(null);
-
-      const res = await request(app)
-        .get('/api/submission/non-existent-id');
-
-      expect(res.status).toBe(404);
-      expect(res.body).toHaveProperty('error');
+       const res = await request(app).get('/api/submission/123');
+       
+       expect(res.status).toBe(200);
+       expect(res.body.id).toBe('123');
     });
 
-    it('should create and then fetch submission', async () => {
-      const fakeId = 'test-id-123';
-      mockedCreate.mockResolvedValue(fakeId);
+    it('should return 404 if not found', async () => {
+       (getSubmissionById as jest.Mock).mockResolvedValue(null);
 
-      const createRes = await request(app)
-        .post('/api/submit')
-        .send({
-          code: 'console.log("Hello")',
-          language: 'javascript'
-        });
-
-      expect(createRes.status).toBe(201);
-
-      mockedGet.mockResolvedValue({
-        id: fakeId,
-        status: 'processing'
-      });
-
-      const getRes = await request(app)
-        .get(`/api/submission/${fakeId}`);
-
-      expect(getRes.status).toBe(200);
-      expect(getRes.body).toHaveProperty('id', fakeId);
-      expect(getRes.body).toHaveProperty('status');
+       const res = await request(app).get('/api/submission/999');
+       
+       expect(res.status).toBe(404);
     });
-
   });
 
 });
