@@ -81,3 +81,9 @@ Deterministic complexity estimation for algorithms using a scaling input approac
 - **Complexity Tests** (ackend/tests/complexity.test.ts):
     - Verifies isComplexityMode signature detection.
     - Verifies Big O estimation logic with mocked timing data.
+
+## 8. Non-Goals (This Phase)
+- Frontend UI changes.
+- Multi-parameter algorithm support.
+- Array/Matrix input generation.
+- AI-based runtime input generation.
