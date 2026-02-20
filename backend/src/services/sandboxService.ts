@@ -1,4 +1,4 @@
-import sandboxRunner from '../sandbox/sandboxRunner';
+import sandboxRunner from '../routes/sandbox/sandboxRunner';
 
 export interface SandboxResult {
   execution_time: number;

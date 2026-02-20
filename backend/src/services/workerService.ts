@@ -5,7 +5,7 @@ import {
   updateSubmission,
 } from './submissionService';
 import { PythonComplexityAnalyzer } from '../complexity/python/PythonComplexityAnalyzer';
-import sandboxRunner from '../sandbox/sandboxRunner';
+import sandboxRunner from '../routes/sandbox/sandboxRunner';
 
 const pythonAnalyzer = new PythonComplexityAnalyzer();
 
@@ -26,20 +26,39 @@ export const processSubmission = async (id: string) => {
     // CHECK FOR COMPLEXITY MODE (Python + Signature)
     if (submission.language === 'python' && pythonAnalyzer.isComplexityMode(submission.code)) {
         
-        console.log(`Processing submission ${id} in Complexity Mode`);
+        console.log(`[Worker] Started processing submission ${id} in Complexity Mode`);
+        console.log(`[Worker] Triggering Python Complexity Analyzer...`);
         
         const complexityResult = await pythonAnalyzer.analyze(submission.code, submission.language, sandboxRunner);
         
         if (complexityResult.error) {
+             console.error(`[Worker] Complexity Analysis failed for ${id}:`, complexityResult.error);
              throw new Error(complexityResult.error);
         }
         
-        // Use LLM to explain the complexity
-        const explanation = await llmService.explain(
-            submission.code,
-            complexityResult.estimatedComplexity || 'Unknown'
-        );
+        console.log(`[Worker] Complexity Analysis finished for ${id}. Estimated: ${complexityResult.estimatedComplexity}`);
+        console.log(`[Worker] Fetching AI explanation...`);
+        
+        const t1 = Math.max(complexityResult.executionTimes?.small || 0.000001, 0.000001);
+        const t2 = Math.max(complexityResult.executionTimes?.medium || 0.000001, 0.000001);
+        const t3 = Math.max(complexityResult.executionTimes?.large || 0.000001, 0.000001);
 
+        const ratio1 = complexityResult.executionTimes ? (t2 / t1) : undefined;
+        const ratio2 = complexityResult.executionTimes ? (t3 / t2) : undefined;
+
+        // Use LLM to explain the complexity
+        const explanation = await llmService.explain({
+            code: submission.code,
+            estimatedComplexity: complexityResult.estimatedComplexity || 'Unknown',
+            smallTime: complexityResult.executionTimes?.small,
+            mediumTime: complexityResult.executionTimes?.medium,
+            largeTime: complexityResult.executionTimes?.large,
+            ratio1,
+            ratio2,
+            memoryUsage: 'N/A' // Not tracked in Python complexity wrapper yet
+        });
+
+        console.log(`[Worker] Updating DB for submission ${id} with completed status...`);
         await updateSubmission(id, {
             status: 'completed',
             execution_time_small: complexityResult.executionTimes?.small,
@@ -50,21 +69,28 @@ export const processSubmission = async (id: string) => {
             output: 'Complexity Analysis Completed Successfully',
             complexity: complexityResult.estimatedComplexity
         });
+        console.log(`[Worker] Successfully completed submission ${id}`);
         
     } else {
         // STANDARD MODE
-        console.log(`Processing submission ${id} in Standard Mode`);
+        console.log(`[Worker] Started processing submission ${id} in Standard Mode`);
+        console.log(`[Worker] Executing code in Sandbox...`);
         
         const sandboxResult = await sandboxService.execute(
           submission.code,
           submission.language,
           submission.input
         );
+        
+        console.log(`[Worker] Sandbox execution finished for ${id}.`);
+        console.log(`[Worker] Fetching AI explanation...`);
 
-        const explanation = await llmService.explain(
-          submission.code,
-          sandboxResult.complexity
-        );
+        const explanation = await llmService.explain({
+          code: submission.code,
+          estimatedComplexity: sandboxResult.complexity,
+          smallTime: sandboxResult.execution_time,
+          memoryUsage: sandboxResult.memory_used
+        });
 
         await updateSubmission(id, {
           status: 'completed',

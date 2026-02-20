@@ -1,4 +1,4 @@
-import { Sandbox } from '../sandbox/Sandbox';
+import { Sandbox } from '../routes/sandbox/Sandbox';
 
 export interface ComplexityResult {
     isComplexityMode: boolean;

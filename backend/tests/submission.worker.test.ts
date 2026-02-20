@@ -80,10 +80,12 @@ describe('SubmissionWorker', () => {
         await worker.processSubmission('125');
 
         expect(sandboxService.execute).toHaveBeenCalled();
-        expect(llmService.explain).toHaveBeenCalledWith(
-            mockSubmission.code,
-            executionResult.complexity
-        );
+        expect(llmService.explain).toHaveBeenCalledWith({
+            code: mockSubmission.code,
+            estimatedComplexity: executionResult.complexity,
+            smallTime: executionResult.execution_time,
+            memoryUsage: executionResult.memory_used
+        });
         expect(submissionService.updateSubmission).toHaveBeenCalledWith(
             '125',
             expect.objectContaining({

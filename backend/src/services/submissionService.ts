@@ -20,6 +20,7 @@ export const createSubmission = async (
       ]
     );
   
+    console.log(`[DB] Successfully saved submission ${id} to database.`);
     return id;
   } catch (error) {
     console.error("REAL DB ERROR:", error);

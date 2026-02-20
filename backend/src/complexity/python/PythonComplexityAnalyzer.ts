@@ -1,5 +1,5 @@
 import { ComplexityAnalyzer, ComplexityResult } from '../ComplexityAnalyzer';
-import { Sandbox } from '../../sandbox/Sandbox';
+import { Sandbox } from '../../routes/sandbox/Sandbox';
 
 export class PythonComplexityAnalyzer implements ComplexityAnalyzer {
     

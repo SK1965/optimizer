@@ -1,7 +1,7 @@
 import { PythonComplexityAnalyzer } from '../src/complexity/python/PythonComplexityAnalyzer';
-import sandboxRunner from '../src/sandbox/sandboxRunner';
+import sandboxRunner from '../src/routes/sandbox/sandboxRunner';
 
-jest.mock('../src/sandbox/sandboxRunner');
+jest.mock('../src/routes/sandbox/sandboxRunner');
 
 describe('PythonComplexityAnalyzer', () => {
     let analyzer: PythonComplexityAnalyzer;
