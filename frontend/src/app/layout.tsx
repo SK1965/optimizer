@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Optimizer",
-  description: "Optimizer frontend",
+  title: "AI Code Optimizer & Benchmarking Engine",
+  description: "Professional tool for evaluating and optimizing code execution time and complexity using AI.",
 };
 
 export default function RootLayout({
