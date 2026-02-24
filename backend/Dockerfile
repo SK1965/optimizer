@@ -17,5 +17,4 @@ EXPOSE 3000
 
 # Start the application
 # --dns-result-order=ipv4first is used to resolve ENETUNREACH issues with database connections
-# --env-file=.env is used to load environment variables as expected by the start script
-CMD ["node", "--dns-result-order=ipv4first", "--env-file=.env", "dist/src/index.js"]
+CMD ["node", "--dns-result-order=ipv4first", "dist/src/index.js"]
