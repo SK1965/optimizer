@@ -25,8 +25,11 @@ export default function ResultPanel({ result, error, isSubmitting }: ResultPanel
             <pre className="whitespace-pre-wrap font-mono uppercase text-xs">{error}</pre>
           </div>
         ) : isSubmitting ? (
-          <div className="flex h-full flex-col items-center justify-center text-foreground/50 space-y-4">
-            <p className="text-sm">Executing code...</p>
+          <div className="flex h-full flex-col items-center justify-center text-foreground/40 space-y-4 animate-in fade-in duration-500">
+            <div className="relative flex h-8 w-8 items-center justify-center">
+              <div className="absolute h-full w-full animate-spin rounded-full border-2 border-brand/20 border-t-brand"></div>
+            </div>
+            <p className="text-xs font-medium tracking-wide uppercase">Analyzing Code...</p>
           </div>
         ) : result ? (
           <div className="space-y-6">
