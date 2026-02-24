@@ -7,6 +7,12 @@ interface ResultPanelProps {
 }
 
 export default function ResultPanel({ result, error, isSubmitting }: ResultPanelProps) {
+  const formatExecutionTime = (time: number | null) => {
+    if (time === null) return null;
+    if (time < 1) return "< 1ms";
+    return `${time.toFixed(0)}ms`;
+  };
+
   return (
     <div className="flex h-full w-full flex-col bg-background border-l border-panel-border">
       <div className="flex h-10 items-center border-b border-panel-border px-4">
@@ -20,7 +26,6 @@ export default function ResultPanel({ result, error, isSubmitting }: ResultPanel
           </div>
         ) : isSubmitting ? (
           <div className="flex h-full flex-col items-center justify-center text-foreground/50 space-y-4">
-            <div className="h-6 w-6 animate-spin rounded-full border-2 border-brand border-t-transparent"></div>
             <p className="text-sm">Executing code...</p>
           </div>
         ) : result ? (
@@ -28,16 +33,10 @@ export default function ResultPanel({ result, error, isSubmitting }: ResultPanel
             <div>
               <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-foreground/50">Status</h3>
               <div className="flex items-center gap-2">
-                <span className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
-                  result.status === 'completed' ? 'bg-emerald-500/10 text-emerald-500' :
-                  result.status === 'failed' ? 'bg-red-500/10 text-red-500' :
-                  'bg-yellow-500/10 text-yellow-500'
-                }`}>
-                  {result.status}
-                </span>
-                {result.execution_time && (
+                <span>{result.status}</span>
+                {result.execution_time !== null && (
                   <span className="text-xs text-foreground/50">
-                    {result.execution_time}ms
+                    Time: {formatExecutionTime(result.execution_time)}
                   </span>
                 )}
               </div>
@@ -55,18 +54,14 @@ export default function ResultPanel({ result, error, isSubmitting }: ResultPanel
             {result.estimated_complexity && (
               <div>
                 <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-foreground/50">Time Complexity</h3>
-                <div className="rounded bg-panel p-3 text-sm font-mono text-brand border border-panel-border">
-                  {result.estimated_complexity}
-                </div>
+                <div>{result.estimated_complexity}</div>
               </div>
             )}
 
             {result.ai_explanation && (
               <div>
                 <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-foreground/50">AI Analysis</h3>
-                <div className="prose prose-invert max-w-none text-sm leading-relaxed text-foreground/80">
-                  <p className="whitespace-pre-wrap">{result.ai_explanation}</p>
-                </div>
+                <div>{result.ai_explanation}</div>
               </div>
             )}
           </div>
