@@ -18,13 +18,6 @@ export default function EditorPanel({ language, code, onChange }: EditorPanelPro
       <div className="flex h-10 shrink-0 items-center justify-between border-b border-panel-border px-4">
         <h2 className="text-sm font-medium text-foreground/90">Editor</h2>
         <div className="flex gap-2">
-          {/* Action buttons placeholder */}
-          <button className="rounded px-3 py-1 text-xs font-medium text-white transition-colors hover:bg-white/10">
-            Format
-          </button>
-          <button className="rounded bg-brand px-4 py-1 text-xs font-medium text-white transition-colors hover:bg-brand/90">
-            Run
-          </button>
         </div>
       </div>
       <div className="flex-1 overflow-hidden">
