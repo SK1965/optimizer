@@ -70,9 +70,13 @@ export default function ResultPanel({ result, error, isSubmitting }: ResultPanel
             )}
 
             {result.ai_explanation && (
-              <div>
-                <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-foreground/50">AI Analysis</h3>
-                <div>{result.ai_explanation}</div>
+              <div className="rounded-md border border-panel-border bg-panel flex flex-col max-h-[400px]">
+                <div className="shrink-0 border-b border-panel-border px-4 py-3 bg-background/50">
+                  <h3 className="text-[10px] font-semibold uppercase tracking-wider text-foreground/50">AI Analysis & Insights</h3>
+                </div>
+                <div className="overflow-y-auto p-4 text-sm leading-relaxed text-foreground/80 custom-scrollbar prose prose-invert prose-p:my-2 prose-pre:my-2 max-w-none prose-pre:bg-background/80 prose-pre:border prose-pre:border-panel-border">
+                  <div className="whitespace-pre-wrap font-sans">{result.ai_explanation}</div>
+                </div>
               </div>
             )}
           </div>
