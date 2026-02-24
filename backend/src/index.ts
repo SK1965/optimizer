@@ -1,4 +1,3 @@
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 import { connectDB } from './db';
 import { app } from './app';
 
