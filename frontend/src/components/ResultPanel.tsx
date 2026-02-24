@@ -33,7 +33,18 @@ export default function ResultPanel({ result, error, isSubmitting }: ResultPanel
             <div>
               <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-foreground/50">Status</h3>
               <div className="flex items-center gap-2">
-                <span>{result.status}</span>
+                <span className={`inline-flex items-center rounded px-2.5 py-0.5 text-xs font-medium border ${
+                  result.status === 'completed' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' :
+                  result.status === 'failed' ? 'bg-red-500/10 text-red-400 border-red-500/20' :
+                  'bg-yellow-500/10 text-yellow-400 border-yellow-500/20'
+                }`}>
+                  <span className={`mr-1.5 h-1.5 w-1.5 rounded-full ${
+                    result.status === 'completed' ? 'bg-emerald-500' :
+                    result.status === 'failed' ? 'bg-red-500' :
+                    'bg-yellow-500'
+                  }`}></span>
+                  {result.status.charAt(0).toUpperCase() + result.status.slice(1)}
+                </span>
                 {result.execution_time !== null && (
                   <span className="text-xs text-foreground/50">
                     Time: {formatExecutionTime(result.execution_time)}
