@@ -10,7 +10,7 @@ app.use(cors({
   'methods': 'GET,HEAD,PUT,PATCH,POST,DELETE',
   'preflightContinue': false
 }));
-app.use(express.json());
+app.use(express.json({ limit: '2mb' }));
 app.use('/api/', router);
 app.get('/', async (req: Request, res: Response) => {
   try {
