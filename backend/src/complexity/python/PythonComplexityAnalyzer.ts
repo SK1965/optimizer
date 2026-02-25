@@ -20,12 +20,18 @@ export class PythonComplexityAnalyzer implements ComplexityAnalyzer {
         return this.SIGNATURE_REGEX.test(code);
     }
 
-    async analyze(code: string, language: string, sandbox: Sandbox): Promise<ComplexityResult> {
+    async analyze(code: string, language: string, sandbox: Sandbox, wrapperTemplate?: string): Promise<ComplexityResult> {
         if (!this.isComplexityMode(code)) {
              return { isComplexityMode: false };
         }
 
-        const wrappedCode = this.generateWrapper(code);
+        let wrappedCode: string;
+        if (wrapperTemplate) {
+            wrappedCode = wrapperTemplate.replace('{{USER_CODE}}', code);
+        } else {
+            // Fallback for cases where wrapperTemplate isn't provided but it still runs
+            wrappedCode = this.generateFallbackWrapper(code);
+        }
         
         const result = await sandbox.execute('python', wrappedCode);
 
@@ -53,7 +59,7 @@ export class PythonComplexityAnalyzer implements ComplexityAnalyzer {
         };
     }
 
-    private generateWrapper(userCode: string): string {
+    private generateFallbackWrapper(userCode: string): string {
         return `
 import time
 import sys

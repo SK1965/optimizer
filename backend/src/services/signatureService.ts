@@ -62,3 +62,23 @@ export const extractSignature = (code: string, language: string): string | null 
 
   return `${outputLang}:${paramType}->${returnType}`;
 };
+
+import { query } from '../db';
+import { randomUUID } from 'crypto';
+
+export const getWrapperTemplate = async (language: string, normalizedSignature: string): Promise<string | null> => {
+  const result = await query(
+    `SELECT wrapper_template FROM signature_wrappers WHERE language = $1 AND normalized_signature = $2`,
+    [language, normalizedSignature]
+  );
+  return result.rows[0]?.wrapper_template || null;
+};
+
+export const saveWrapperTemplate = async (language: string, normalizedSignature: string, wrapperTemplate: string): Promise<void> => {
+  await query(
+    `INSERT INTO signature_wrappers (id, language, normalized_signature, wrapper_template) 
+     VALUES ($1, $2, $3, $4)
+     ON CONFLICT (language, normalized_signature) DO NOTHING`,
+    [randomUUID(), language, normalizedSignature, wrapperTemplate]
+  );
+};
