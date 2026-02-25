@@ -37,8 +37,18 @@
   "jest": {
     "preset": "ts-jest",
     "testEnvironment": "node",
+    "roots": [
+      "<rootDir>/tests"
+    ],
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "/dist/"
+    ],
     "testMatch": [
-      "**/tests/**/*.test.ts"
-    ]
+      "**/*.test.ts"
+    ],
+    "moduleNameMapper": {
+      "^@google/genai$": "<rootDir>/tests/__mocks__/@google/genai.ts"
+    }
   }
 }
