@@ -4,29 +4,33 @@ import { createSubmission, getSubmissionById } from '../services/submissionServi
 import { processSubmission } from '../services/workerService';
 
 const submissionController = async(req : Request , res : Response) => {
-    const submissionData : CreateSubmissionInput = req.body
-    
-    if(!submissionData || !submissionData.code || !submissionData.language){
-        return res.status(400).json({
-            error : "data not found or invalid"
-        })
+    const { code, language } = req.body;
+
+    if (typeof code !== 'string' || code.trim().length === 0) {
+        return res.status(400).json({ error: 'Invalid or missing field: code must be a non-empty string' });
     }
-    console.log(submissionData);
+    if (typeof language !== 'string' || language.trim().length === 0) {
+        return res.status(400).json({ error: 'Invalid or missing field: language must be a non-empty string' });
+    }
+
+    console.log(`[API] Received code length: ${code.length}, language: ${language}`);
+
     try {
-        const id : string = await createSubmission(submissionData);
+        const id : string = await createSubmission({ code, language });
         
         // Trigger worker asynchronously (fire and forget)
         processSubmission(id).catch(err => console.error(`Worker error for ${id}:`, err));
         
+        // NOTE: key is `submissionId` (camelCase) — must match frontend api.ts expectation
         res.status(201).json({
-            message : "Submission created successfully",
-            submission_id : id
-        })
+            message : 'Submission created successfully',
+            submissionId : id
+        });
     } catch (error) {
-        console.log(error);
+        console.error('[API] createSubmission error:', error);
         res.status(500).json({
-            message : "Internal Server Error",
-        })
+            message : 'Internal Server Error',
+        });
     }
 }
 const getsubmissionController = async(req : Request , res : Response) => {

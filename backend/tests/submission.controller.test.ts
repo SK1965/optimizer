@@ -52,7 +52,7 @@ describe('SubmissionController', () => {
         .send({ code: 'print("hi")', language: 'python' });
 
       expect(res.status).toBe(201);
-      expect(res.body.submission_id).toBe(fakeId);
+      expect(res.body.submissionId).toBe(fakeId);
       
       expect(createSubmission).toHaveBeenCalledTimes(1);
       expect(processSubmission).toHaveBeenCalledWith(fakeId);
