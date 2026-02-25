@@ -7,6 +7,14 @@ import { query } from '../src/db';
 // Mock other external dependencies but LEAVE our internal signature/wrapper caching active
 jest.mock('../src/services/submissionService');
 jest.mock('../src/services/sandboxService');
+jest.mock('../src/routes/sandbox/sandboxRunner', () => ({
+  __esModule: true,
+  default: {
+    execute: jest.fn().mockResolvedValue({ 
+       exitCode: 0, output: 'SMALL: 0.1\nMEDIUM: 0.2\nLARGE: 0.4', memory_used: '10MB' 
+    })
+  }
+}));
 
 const TEST_SIG = `
 class Solution:

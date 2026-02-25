@@ -6,10 +6,18 @@ import { query } from '../src/db';
 
 jest.mock('../src/services/submissionService');
 jest.mock('../src/services/sandboxService');
+jest.mock('../src/routes/sandbox/sandboxRunner', () => ({
+  __esModule: true,
+  default: {
+    execute: jest.fn().mockResolvedValue({ 
+       exitCode: 0, output: 'SMALL: 0.1\nMEDIUM: 0.2\nLARGE: 0.4', memory_used: '10MB' 
+    })
+  }
+}));
 
 const TEST_SIG = `
 class Solution:
-    def solve(self, x: int):
+    def solve(self, x: list[int]):
         # Stress test signature
         pass
 `;
@@ -18,11 +26,11 @@ describe('Concurrency Caching Stress Test', () => {
 
     beforeAll(async () => {
          // Clean up specific test signature cache
-         await query(`DELETE FROM signature_wrappers WHERE language = 'python' AND normalized_signature = 'python:int->int'`);
+         await query(`DELETE FROM signature_wrappers WHERE language = 'python' AND normalized_signature = 'python:list[int]->int'`);
     });
 
     afterAll(async () => {
-         await query(`DELETE FROM signature_wrappers WHERE language = 'python' AND normalized_signature = 'python:int->int'`);
+         await query(`DELETE FROM signature_wrappers WHERE language = 'python' AND normalized_signature = 'python:list[int]->int'`);
          const { pool } = require('../src/db');
          await pool.end();
     });

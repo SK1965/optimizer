@@ -12,9 +12,9 @@ export class PythonComplexityAnalyzer implements ComplexityAnalyzer {
     /**
      * Regex to match:
      * class Solution:
-     *     def solve(self, param: int) -> ...:
+     *     def solve(self, param: type) -> ...:
      */
-    private readonly SIGNATURE_REGEX = /class\s+Solution:\s+def\s+solve\s*\(\s*self\s*,\s*\w+\s*:\s*int\s*\)/s;
+    private readonly SIGNATURE_REGEX = /class\s+Solution:\s+def\s+solve\s*\(\s*self\s*,\s*\w+\s*:\s*[a-zA-Z0-9_\[\]]+\s*\)/s;
 
     isComplexityMode(code: string): boolean {
         return this.SIGNATURE_REGEX.test(code);
