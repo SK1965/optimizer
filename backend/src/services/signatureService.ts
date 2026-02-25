@@ -74,11 +74,29 @@ export const getWrapperTemplate = async (language: string, normalizedSignature: 
   return result.rows[0]?.wrapper_template || null;
 };
 
-export const saveWrapperTemplate = async (language: string, normalizedSignature: string, wrapperTemplate: string): Promise<void> => {
+export const claimSignatureLock = async (language: string, normalizedSignature: string): Promise<void> => {
+  // Purposefully throws Postgres Error 23505 (unique_violation) if locked/exists
   await query(
     `INSERT INTO signature_wrappers (id, language, normalized_signature, wrapper_template) 
-     VALUES ($1, $2, $3, $4)
-     ON CONFLICT (language, normalized_signature) DO NOTHING`,
-    [randomUUID(), language, normalizedSignature, wrapperTemplate]
+     VALUES ($1, $2, $3, NULL)`,
+    [randomUUID(), language, normalizedSignature]
   );
+};
+
+export const updateSignatureWrapper = async (language: string, normalizedSignature: string, wrapperTemplate: string): Promise<void> => {
+  await query(
+    `UPDATE signature_wrappers 
+     SET wrapper_template = $1 
+     WHERE language = $2 AND normalized_signature = $3`,
+    [wrapperTemplate, language, normalizedSignature]
+  );
+};
+
+export const waitForSignatureWrapper = async (language: string, normalizedSignature: string, maxAttempts = 20, delayMs = 1000): Promise<string> => {
+  for (let i = 0; i < maxAttempts; i++) {
+      const template = await getWrapperTemplate(language, normalizedSignature);
+      if (template) return template;
+      await new Promise(resolve => setTimeout(resolve, delayMs));
+  }
+  throw new Error(`Timeout waiting for wrapper generation for ${language} - ${normalizedSignature}`);
 };

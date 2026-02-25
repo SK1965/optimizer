@@ -6,7 +6,7 @@
     "build": "tsc",
     "start": "node --env-file=.env dist/src/index.js",
     "dev": "tsx --watch --env-file=.env src/index.ts",
-    "test": "jest"
+    "test": "node --env-file=.env node_modules/jest/bin/jest.js"
   },
   "keywords": [],
   "author": "",
