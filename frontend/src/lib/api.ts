@@ -24,6 +24,7 @@ export interface SubmissionStatus {
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
 export const submitCode = async (data: SubmissionRequest): Promise<SubmissionResponse> => {
+  console.log('Submitting code length:', data.code.length);
   const response = await fetch(`${API_BASE_URL}/submit`, {
     method: 'POST',
     headers: {
