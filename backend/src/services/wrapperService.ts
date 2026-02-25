@@ -12,6 +12,11 @@ I have a function signature: ${signature}.
 Generate ONLY a Python wrapper template to measure the time taken to run this function for different input sizes: 1000, 2000, 4000.
 The user code will be injected where {{USER_CODE}} is placed.
 
+Deterministic Input Rules:
+- You MUST use fixed, deterministic values for inputs (e.g. lists of strictly descending or identical identical integers, or exact identical shapes).
+- DO NOT use random numbers or unpredictable input generation.
+- DO NOT add creative variations. The output shape should strictly be predictable.
+
 Output requirements:
 - ONLY output the valid Python code. No markdown formatting, no explanations.
 - The wrapper must print the execution times exactly as:
@@ -21,9 +26,13 @@ LARGE: <time in seconds>
     `;
 
     try {
+        console.log(`[LLM] Generating wrapper with deterministic settings`);
         const response = await ai.models.generateContent({
             model: 'gemini-2.5-flash',
             contents: prompt,
+            config: {
+                temperature: 0.0
+            }
         });
 
         const rawText = response.text || '';
