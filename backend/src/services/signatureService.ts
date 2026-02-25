@@ -83,6 +83,14 @@ export const claimSignatureLock = async (language: string, normalizedSignature: 
   );
 };
 
+export const releaseSignatureLock = async (language: string, normalizedSignature: string): Promise<void> => {
+  await query(
+    `DELETE FROM signature_wrappers 
+     WHERE language = $1 AND normalized_signature = $2 AND wrapper_template IS NULL`,
+    [language, normalizedSignature]
+  );
+};
+
 export const updateSignatureWrapper = async (language: string, normalizedSignature: string, wrapperTemplate: string): Promise<void> => {
   await query(
     `UPDATE signature_wrappers 
