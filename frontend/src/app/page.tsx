@@ -38,11 +38,11 @@ export default function Home() {
       clearPolling();
 
       const response = await submitCode({ code, language });
-      const { submissionId } = response;
+      const { submission_id } = response;
 
       pollInterval.current = setInterval(async () => {
         try {
-          const status = await getSubmissionStatus(submissionId);
+          const status = await getSubmissionStatus(submission_id);
           setResult(status);
 
           if (status.status === 'completed' || status.status === 'failed') {
@@ -54,7 +54,7 @@ export default function Home() {
           setError(`Failed to retrieve submission status: ${pollError.message}`);
           setIsSubmitting(false);
         }
-      }, 1500);
+      }, 5000);
 
     } catch (submitError: any) {
       setError(`Failed to submit code: ${submitError.message}`);
