@@ -7,14 +7,16 @@ export const createSubmission = async (
   const id = randomUUID();
   
   try {
+    const modeValue = data.mode || 'standard';
     await query(
       `INSERT INTO submissions 
-       (id, code, language, input, status, created_at, updated_at)
-       VALUES ($1, $2, $3, $4, $5, NOW(), NOW())`,
+       (id, code, language, mode, input, status, created_at, updated_at)
+       VALUES ($1, $2, $3, $4, $5, $6, NOW(), NOW())`,
       [
         id,
         data.code,
         data.language,
+        modeValue,
         data.input ?? null,
         'processing'
       ]

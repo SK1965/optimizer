@@ -1,6 +1,7 @@
 export interface CreateSubmissionInput {
   code: string;
   language: string;
+  mode?: 'standard' | 'complexity';
   input?: string;
 }
 
