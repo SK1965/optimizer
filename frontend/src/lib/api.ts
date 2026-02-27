@@ -57,3 +57,19 @@ export const getSubmissionStatus = async (id: string): Promise<SubmissionStatus>
     throw new Error(`Failed to get submission status: ${error.message}`);
   }
 };
+
+export const getBulkSubmissions = async (ids: string[]): Promise<SubmissionStatus[]> => {
+  if (!ids || ids.length === 0) return [];
+  
+  try {
+    const response = await apiClient.post<SubmissionStatus[]>('/submissions/bulk', {
+      submission_ids: ids
+    });
+    return response.data;
+  } catch (error: any) {
+    if (axios.isAxiosError(error) && error.response) {
+      throw new Error(`Failed to fetch bulk submissions: ${error.response.statusText}`);
+    }
+    throw new Error(`Failed to fetch bulk submissions: ${error.message}`);
+  }
+};

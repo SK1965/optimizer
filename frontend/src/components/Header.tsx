@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { SUPPORTED_LANGUAGES } from "@/lib/constants";
 
 interface HeaderProps {
@@ -13,9 +14,11 @@ export default function Header({ language, isSubmitting, onLanguageChange, onRun
   return (
     <header className="flex h-14 items-center justify-between border-b border-panel-border bg-panel px-4 lg:px-6">
       <div className="flex items-center gap-4">
-        <h1 className="text-lg font-semibold tracking-tight text-white">
-          Optimizer
-        </h1>
+        <Link href="/">
+          <h1 className="text-lg font-semibold tracking-tight text-white hover:text-brand transition-colors cursor-pointer">
+            Optimizer
+          </h1>
+        </Link>
         <select
           value={language}
           onChange={(e) => onLanguageChange(e.target.value)}
