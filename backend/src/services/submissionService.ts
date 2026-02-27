@@ -43,6 +43,26 @@ export const getSubmissionById = async (id: string) => {
   }
 };
 
+export const getBulkSubmissions = async (ids: string[]) => {
+  if (!ids || ids.length === 0) return [];
+
+  try {
+    // Postgres ANY operator makes it easy to match against an array parameter
+    const result = await query(
+      `SELECT id, language, mode, status, estimated_complexity, created_at
+       FROM submissions 
+       WHERE id = ANY($1::uuid[])
+       ORDER BY created_at DESC`,
+      [ids]
+    );
+    
+    return result.rows;
+  } catch (error) {
+    console.error("Error fetching bulk submissions:", error);
+    throw error;
+  }
+};
+
 export const updateSubmission = async (
   id: string,
   updates: UpdateSubmissionInput

@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { CreateSubmissionInput } from '../types/submissions.types';
-import { createSubmission, getSubmissionById } from '../services/submissionService';
+import { createSubmission, getSubmissionById, getBulkSubmissions } from '../services/submissionService';
 import { processSubmission } from '../services/workerService';
 
 const submissionController = async(req : Request , res : Response) => {
@@ -55,4 +55,21 @@ const getsubmissionController = async(req : Request , res : Response) => {
         })
     }
 }
-export {submissionController , getsubmissionController};
+
+const getBulkSubmissionsController = async (req: Request, res: Response) => {
+    const { submission_ids } = req.body;
+
+    if (!Array.isArray(submission_ids)) {
+        return res.status(400).json({ error: "Invalid payload: submission_ids must be an array of strings" });
+    }
+
+    try {
+        const submissions = await getBulkSubmissions(submission_ids);
+        return res.status(200).json(submissions);
+    } catch (error) {
+        console.error("Error in getBulkSubmissionsController:", error);
+        return res.status(500).json({ error: "Internal Server Error" });
+    }
+}
+
+export { submissionController, getsubmissionController, getBulkSubmissionsController };
