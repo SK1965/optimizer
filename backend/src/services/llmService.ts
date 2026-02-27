@@ -34,15 +34,23 @@ export const explain = async (params: ExplainParams): Promise<string> => {
             .replace('{{ESTIMATED_COMPLEXITY}}', params.estimatedComplexity || 'Unknown');
 
         const response = await getAI().models.generateContent({
-            model: 'gemini-2.5-flash',
-            contents: prompt,
-            config: {
-                responseMimeType: 'application/json'
-            }
+            model: 'gemma-3-27b-it',
+            contents: prompt
         });
 
-        const text = response.text || '{}';
-        return text;
+        let text = response.text || '{}';
+        
+        // Strip out markdown formatting if present
+        if (text.startsWith('```json')) {
+            text = text.substring(7);
+        } else if (text.startsWith('```')) {
+            text = text.substring(3);
+        }
+        if (text.endsWith('```')) {
+            text = text.substring(0, text.length - 3);
+        }
+        
+        return text.trim();
     } catch (error) {
         console.error("LLM Service Error:", error);
         return JSON.stringify({

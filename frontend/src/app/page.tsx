@@ -38,11 +38,11 @@ export default function Home() {
       clearPolling();
 
       const response = await submitCode({ code, language });
-      const { submission_id } = response;
+      const { submissionId } = response;
 
       pollInterval.current = setInterval(async () => {
         try {
-          const status = await getSubmissionStatus(submission_id);
+          const status = await getSubmissionStatus(submissionId);
           setResult(status);
 
           if (status.status === 'completed' || status.status === 'failed') {

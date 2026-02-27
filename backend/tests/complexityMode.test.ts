@@ -12,6 +12,15 @@ jest.mock('../src/services/aiBoilerplateService');
 
 describe('SubmissionWorker - AI Complexity Mode', () => {
 
+  beforeAll(() => {
+    jest.spyOn(console, 'log').mockImplementation(() => {});
+    jest.spyOn(console, 'error').mockImplementation(() => {});
+  });
+
+  afterAll(() => {
+    jest.restoreAllMocks();
+  });
+
   beforeEach(() => {
     jest.clearAllMocks();
   });
@@ -72,7 +81,7 @@ describe('SubmissionWorker - AI Complexity Mode', () => {
               execution_time_medium: 200,
               execution_time_large: 400,
               estimated_complexity: 'O(n) or O(n log n)',
-              ai_explanation: 'AI generated explanation about O(n growth',
+              ai_explanation: 'AI generated explanation about O(n) growth',
               complexity: 'O(n) or O(n log n)' // Backwards compatible metric field
           })
       );

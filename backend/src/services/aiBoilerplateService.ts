@@ -55,7 +55,7 @@ ${userCode}
 `;
 
         const response = await getAI().models.generateContent({
-            model: 'gemini-2.5-flash',
+            model: 'gemma-3-27b-it',
             contents: fullPrompt,
             config: {
                 // Ensure plain text response is requested to minimize markdown formatting

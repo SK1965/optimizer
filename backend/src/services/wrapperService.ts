@@ -28,7 +28,7 @@ LARGE: <time in seconds>
     try {
         console.log(`[LLM] Generating wrapper with deterministic settings`);
         const response = await ai.models.generateContent({
-            model: 'gemini-2.5-flash',
+            model: 'gemma-3-27b-it',
             contents: prompt,
             config: {
                 temperature: 0.0

@@ -4,7 +4,7 @@ import { createSubmission, getSubmissionById } from '../services/submissionServi
 import { processSubmission } from '../services/workerService';
 
 const submissionController = async(req : Request , res : Response) => {
-    const { code, language, mode } = req.body;
+    const { code, language } = req.body;
 
     if (typeof code !== 'string' || code.trim().length === 0) {
         return res.status(400).json({ error: 'Invalid or missing field: code must be a non-empty string' });
@@ -13,10 +13,10 @@ const submissionController = async(req : Request , res : Response) => {
         return res.status(400).json({ error: 'Invalid or missing field: language must be a non-empty string' });
     }
 
-    console.log(`[API] Received code length: ${code.length}, language: ${language}, mode: ${mode || 'standard'}`);
+    console.log(`[API] Received code length: ${code.length}, language: ${language}`);
 
     try {
-        const id : string = await createSubmission({ code, language, mode });
+        const id : string = await createSubmission({ code, language });
         
         // Trigger worker asynchronously (fire and forget)
         processSubmission(id).catch(err => console.error(`Worker error for ${id}:`, err));

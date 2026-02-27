@@ -7,7 +7,7 @@ export const createSubmission = async (
   const id = randomUUID();
   
   try {
-    const modeValue = data.mode || 'standard';
+    const modeValue = 'complexity';
     await query(
       `INSERT INTO submissions 
        (id, code, language, mode, input, status, created_at, updated_at)

@@ -7,8 +7,21 @@ describe('Sandbox Integration Tests', () => {
     // Increase timeout for Docker operations
     jest.setTimeout(30000);
 
+    beforeAll(() => {
+        jest.spyOn(console, 'log').mockImplementation(() => {});
+        jest.spyOn(console, 'error').mockImplementation(() => {});
+    });
+
+    afterAll(() => {
+        jest.restoreAllMocks();
+    });
+
     beforeEach(() => {
         jest.restoreAllMocks();
+        
+        // Mute console output
+        jest.spyOn(console, 'log').mockImplementation(() => {});
+        jest.spyOn(console, 'error').mockImplementation(() => {});
         
         // Mock the internal runDockerCommand to return fake successful responses
         // so tests pass without requiring Docker Desktop to be running.

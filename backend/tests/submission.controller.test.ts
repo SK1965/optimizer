@@ -31,6 +31,8 @@ describe('SubmissionController', () => {
 
   beforeAll(async () => {
      // DB is already mocked via 'pg' module mock
+     jest.spyOn(console, 'log').mockImplementation(() => {});
+     jest.spyOn(console, 'error').mockImplementation(() => {});
   });
 
   afterAll(async () => {

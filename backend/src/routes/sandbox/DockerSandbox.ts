@@ -6,7 +6,7 @@ import { randomUUID } from 'crypto';
 import * as os from 'os';
 
 export class DockerSandbox implements Sandbox {
-    private readonly TIMEOUT_MS = 5000; // 5 seconds
+    private readonly TIMEOUT_MS = 50000; // 5 seconds
     private readonly MEMORY_LIMIT = '512m';
     private readonly CPU_LIMIT = '0.5';
     private readonly IMAGE_NAME = 'sandbox-runner';
@@ -23,6 +23,10 @@ export class DockerSandbox implements Sandbox {
             // Write source code
             await fs.writeFile(path.join(tempDir, filename), code);
             
+            // REQUIRED DEBUG STEP 4: Log final file written inside container
+            console.log(`[Sandbox] File successfully written to: ${path.join(tempDir, filename)}`);
+            console.log(`[Sandbox] File Content:\n${code}`);
+            
             // Write input file if provided
             if (input) {
                 await fs.writeFile(path.join(tempDir, 'input.txt'), input);
@@ -36,6 +40,8 @@ export class DockerSandbox implements Sandbox {
             
             if (compileCmd) {
                 commandScript += `${compileCmd} && `;
+                // REQUIRED DEBUG STEP 5: Confirm compile command is g++ file.cpp -o output
+                console.log(`[Sandbox] Compile Command: ${compileCmd}`);
             }
             
             // If input exists, pipe it. Otherwise just run.

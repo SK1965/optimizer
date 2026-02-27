@@ -6,7 +6,7 @@ export interface SubmissionRequest {
 }
 
 export interface SubmissionResponse {
-  submission_id: string;
+  submissionId: string;
   message: string;
 }
 

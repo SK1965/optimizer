@@ -21,96 +21,74 @@ export const processSubmission = async (id: string) => {
         return;
     }
 
-    // CHECK FOR COMPLEXITY MODE
-    if (submission.mode === 'complexity') {
-        console.log(`[Worker] Started processing submission ${id} in AI Complexity Mode`);
+    console.log(`[Worker] Started processing submission ${id} via AI Wrapper (Default)`);
 
-        try {
-            console.log(`[Worker] Generating boilerplate via LLM...`);
-            const transformedCode = await generateBoilerplate(submission.language, submission.code);
+    try {
+        console.log(`[Worker] Generating boilerplate via LLM...`);
+        const transformedCode = await generateBoilerplate(submission.language, submission.code);
 
-            console.log(`[Worker] Executing instrumented code in Sandbox...`);
-            const sandboxResult = await sandboxService.execute(
-                transformedCode,
-                submission.language,
-                submission.input
-            );
+        // REQUIRED DEBUG STEP 1: Log full transformedCode before sandbox execution
+        console.log(`[Worker] Full Transformed Code before Sandbox execution:\n`, transformedCode);
 
-            console.log(`[Worker] Sandbox execution finished for ${id}. Parsing timings...`);
-            
-            // Extract timings using our regex utility
-            const timings: ParsedTiming = parseTimingOutput(sandboxResult.output);
-            
-            console.log(`[Worker] Parsed Timings:`, timings);
-            
-            // Mathematically estimate complexity based on input doubling ratios
-            const estimatedO = estimateComplexity(timings.small, timings.medium, timings.large);
-            
-            console.log(`[Worker] Complexity Analysis finished for ${id}. Estimated: ${estimatedO}`);
-            console.log(`[Worker] Fetching AI explanation...`);
-            
-            const ratio1 = timings.medium / timings.small;
-            const ratio2 = timings.large / timings.medium;
-
-            // Use LLM to explain the complexity with the extracted real timings
-            const explanation = await llmService.explain({
-                code: submission.code,
-                estimatedComplexity: estimatedO,
-                smallTime: timings.small,
-                mediumTime: timings.medium,
-                largeTime: timings.large,
-                ratio1,
-                ratio2,
-                memoryUsage: sandboxResult.memory_used || 'N/A'
-            });
-
-            console.log(`[Worker] Updating DB for submission ${id} with completed status...`);
-            await updateSubmission(id, {
-                status: 'completed',
-                execution_time_small: timings.small,
-                execution_time_medium: timings.medium,
-                execution_time_large: timings.large,
-                estimated_complexity: estimatedO,
-                ai_explanation: explanation,
-                output: sandboxResult.output,
-                complexity: estimatedO // map to old db schema as fallback
-            });
-            console.log(`[Worker] Successfully completed submission ${id}`);
-
-        } catch (complexityError: any) {
-             console.error(`[Worker] Complexity Analysis failed for ${id}:`, complexityError.message);
-             throw new Error(complexityError.message);
+        // REQUIRED DEBUG STEP 2 & 3: Assert transformedCode.includes('main(')
+        if (submission.language === 'cpp' || submission.language === 'c++' || submission.language === 'c') {
+            if (!transformedCode.includes('main(')) {
+                 console.error(`[Worker] AI generated code is missing main() function.`);
+                 throw new Error('AI generated code is missing main() function.');
+            }
         }
-        
-    } else {
-        // STANDARD MODE
-        console.log(`[Worker] Started processing submission ${id} in Standard Mode`);
-        console.log(`[Worker] Executing code in Sandbox...`);
-        
+
+        console.log(`[Worker] Executing instrumented code in Sandbox...`);
         const sandboxResult = await sandboxService.execute(
-          submission.code,
-          submission.language,
-          submission.input
+            transformedCode,
+            submission.language,
+            submission.input
         );
+
+        console.log(`[Worker] Sandbox execution finished for ${id}. Parsing timings...`);
         
-        console.log(`[Worker] Sandbox execution finished for ${id}.`);
+        // Extract timings using our regex utility
+        const timings: ParsedTiming = parseTimingOutput(sandboxResult.output);
+        
+        console.log(`[Worker] Parsed Timings:`, timings);
+        
+        // Mathematically estimate complexity based on input doubling ratios
+        const estimatedO = estimateComplexity(timings.small, timings.medium, timings.large);
+        
+        console.log(`[Worker] Complexity Analysis finished for ${id}. Estimated: ${estimatedO}`);
         console.log(`[Worker] Fetching AI explanation...`);
+        
+        const ratio1 = timings.medium / timings.small;
+        const ratio2 = timings.large / timings.medium;
 
+        // Use LLM to explain the complexity with the extracted real timings
         const explanation = await llmService.explain({
-          code: submission.code,
-          estimatedComplexity: sandboxResult.complexity,
-          smallTime: sandboxResult.execution_time,
-          memoryUsage: sandboxResult.memory_used
+            code: submission.code,
+            estimatedComplexity: estimatedO,
+            smallTime: timings.small,
+            mediumTime: timings.medium,
+            largeTime: timings.large,
+            ratio1,
+            ratio2,
+            memoryUsage: sandboxResult.memory_used || 'N/A'
         });
 
+        console.log(`[Worker] Updating DB for submission ${id} with completed status...`);
         await updateSubmission(id, {
-          status: 'completed',
-          execution_time: sandboxResult.execution_time,
-          memory_used: sandboxResult.memory_used,
-          output: sandboxResult.output,
-          complexity: sandboxResult.complexity,
-          ai_explanation: explanation,
+            status: 'completed',
+            execution_time_small: timings.small,
+            execution_time_medium: timings.medium,
+            execution_time_large: timings.large,
+            estimated_complexity: estimatedO,
+            ai_explanation: explanation,
+            output: sandboxResult.output,
+            complexity: estimatedO // map to old db schema as fallback
         });
+        console.log(`[Worker] Successfully completed submission ${id}`);
+
+    } catch (complexityError: any) {
+         console.error(`[Worker] Analysis failed for ${id}:`, complexityError.message);
+         throw new Error(complexityError.message);
     }
 
   } catch (error: any) {
