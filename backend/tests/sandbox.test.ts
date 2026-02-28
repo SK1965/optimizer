@@ -1,5 +1,5 @@
-import sandboxRunner from '../src/routes/sandbox/sandboxRunner';
-import { DockerSandbox } from '../src/routes/sandbox/DockerSandbox';
+import sandboxRunner from '../sandbox/sandboxRunner';
+import { DockerSandbox } from '../sandbox/DockerSandbox';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 

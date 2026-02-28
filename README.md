@@ -16,7 +16,7 @@ optimizer/
 │   │   ├── routes/           # Express routes + sandbox runner
 │   │   ├── prompts/          # Language-specific LLM prompt templates
 │   │   ├── utils/            # Timing parser + complexity estimator
-│   │   └── scripts/          # DB migration scripts
+│   │   └── scripts/         # DB migration scripts
 │   └── Dockerfile
 └── SandBox/           # Isolated runtime environment for code execution
 ```
@@ -52,12 +52,12 @@ Frontend polling  →  Displays ResultPanel
 
 | Layer | Technology |
 |---|---|
-| Frontend | Next.js 14, TypeScript, Tailwind CSS |
+| Frontend | Next.js 16, TypeScript, Tailwind CSS |
 | Backend | Node.js, Express 5, TypeScript |
 | LLM | Google Gemma 3 27B (`gemma-3-27b-it`) via `@google/genai` |
 | Database | PostgreSQL |
 | Sandbox | Docker (isolated execution per submission) |
-| Deployment | Fly.io (backend), local Docker (sandbox) |
+| Deployment | local Docker (sandbox) |
 
 ---
 
