@@ -275,3 +275,5 @@ frontend/src/
 ## License
 
 MIT
+
+<!-- Update docs formatting -->
